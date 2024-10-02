@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Constants\" />
-    <Folder Include="Data\Entities\" />
     <Folder Include="Data\Migrations\" />
     <Folder Include="Interfaces\" />
     <Folder Include="UOW\" />
@@ -22,6 +21,14 @@
 
   <ItemGroup>
     <None Include="D:\Repos\Tasks\C#\CiscoProducts\ImportExportFiles\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
