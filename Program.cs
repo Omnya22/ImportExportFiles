@@ -1,11 +1,19 @@
 using ImportExportFiles.Data;
+using ImportExportFiles.Interfaces;
+using ImportExportFiles.Repositories;
+using ImportExportFiles.Services.Mapper;
+using ImportExportFiles.Services;
+using ImportExportFiles.UOW;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddAutoMapper(typeof(ProductMapper));
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
