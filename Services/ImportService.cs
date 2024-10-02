@@ -46,11 +46,8 @@ public class ImportService(
                 logger.LogWarning($"Sheet {sheetNum + 1}: {errBatchMsg}");
             else
                 logger.LogInformation($"Sheet {sheetNum + 1}: Batch processed successfully.");
-
-
         }
     }
-
     private async Task<(int,string)> ProcessBatchAsync(IEnumerable<DataRow> batch, int rowNo)
     {
         StringBuilder errBatch = new();
@@ -85,10 +82,9 @@ public class ImportService(
             }
             rowNo++;
         }
-        await productService.AddOrUpdateProductsAsync(products);
+        await productService.InsertBatchAsync(products);
         return (rowNo,errBatch.ToString());
     }
-
     private string ValidateRow(DataRow row, int rowNo)
     {
         StringBuilder errMessages = new();

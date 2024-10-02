@@ -5,7 +5,10 @@ using ImportExportFiles.Models;
 
 namespace ImportExportFiles.Services;
 
-public class ProductService(IUnitOfWork unitOfWork, IMapper mapper) : IProductService
+public class ProductService(
+    IUnitOfWork unitOfWork, 
+    IMapper mapper, 
+    ILogger<ProductService> logger) : IProductService
 {
     public async Task AddOrUpdateProductAsync(ProductViewModel product)
     {
@@ -80,6 +83,21 @@ public class ProductService(IUnitOfWork unitOfWork, IMapper mapper) : IProductSe
     public async Task<IEnumerable<ProductViewModel>> SearchProductsAsync(string search)
     {
         var products = await unitOfWork.Products.SearchAsync(search);
-        return mapper.Map<List<ProductViewModel>>(products);
+        return mapper.Map<IEnumerable<ProductViewModel>>(products);
+    }
+    public async Task InsertBatchAsync(IEnumerable<ProductViewModel> products)
+    {
+        try
+        {
+            var productList = mapper.Map<IEnumerable<Product>>(products);
+            await unitOfWork.Products.AddRangesAsync(productList);
+
+            await unitOfWork.CompleteAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex,$"Error inserting batch: {ex.Message}");
+            throw;
+        }
     }
 }
