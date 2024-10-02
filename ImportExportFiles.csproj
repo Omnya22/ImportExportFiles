@@ -6,4 +6,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Constants\" />
+    <Folder Include="Data\Entities\" />
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="UOW\" />
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\Repos\Tasks\C#\CiscoProducts\ImportExportFiles\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\Repos\Tasks\C#\CiscoProducts\ImportExportFiles\.editorconfig" />
+  </ItemGroup>
+
 </Project>
