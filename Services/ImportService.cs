@@ -11,6 +11,8 @@ public class ImportService(
     IProductService productService,
     ILogger<ImportService> logger) : IImportService
 {
+    private const int BatchSize = 1000;
+
     public async Task ImportDataFromExcelFileAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -32,13 +34,33 @@ public class ImportService(
         for (int sheetNum = 0; sheetNum < 3 && sheetNum < dataset.Tables.Count; sheetNum++)
         {
             int rowNo = 0;
+            string errBatchMsg = string.Empty;
             var dataTable = dataset.Tables[sheetNum];
-            foreach (DataRow row in dataTable.Rows)
+            var rows = dataTable.Rows.Cast<DataRow>().AsEnumerable();
+            for (int i = 0; i < dataTable.Rows.Count; i += BatchSize)
             {
-                rowNo++;
-                try
-                {
-                    var product = new ProductViewModel
+                var batch = rows.Skip(i).Take(BatchSize);
+                (rowNo,errBatchMsg) = await ProcessBatchAsync(batch, rowNo);
+            }
+            if (!string.IsNullOrWhiteSpace(errBatchMsg))
+                logger.LogWarning($"Sheet {sheetNum + 1}: {errBatchMsg}");
+            else
+                logger.LogInformation($"Sheet {sheetNum + 1}: Batch processed successfully.");
+
+
+        }
+    }
+
+    private async Task<(int,string)> ProcessBatchAsync(IEnumerable<DataRow> batch, int rowNo)
+    {
+        StringBuilder errBatch = new();
+        List<ProductViewModel> products = [];
+        foreach (DataRow row in batch)
+        {
+            try
+            {
+                products.Add(
+                    new ProductViewModel
                     {
                         BandNumber = row[HeaderNames.BandNumber].ToString(),
                         CategoryCode = row[HeaderNames.CategoryCode].ToString(),
@@ -48,25 +70,25 @@ public class ImportService(
                         ListPrice = Convert.ToDecimal(row[HeaderNames.ListPrice]),
                         MinDiscount = Convert.ToDecimal(row[HeaderNames.MinDiscount]),
                         DiscountPrice = Convert.ToDecimal(row[HeaderNames.DiscountPrice])
-                    };
-                    var validationErrors = ValidateRow(row, rowNo);
-                    if (!string.IsNullOrWhiteSpace(validationErrors))
-                    {
-                        logger.LogWarning($"Skipping row {rowNo} due to validation errors: {validationErrors}");
-                        continue;
-                    }
-                    await productService.AddOrUpdateProductAsync(product);
-                    logger.LogInformation($"Successfully processed row {rowNo}.");
+                    });
 
-                }
-                catch (Exception ex)
+                var validationErrors = ValidateRow(row, rowNo);
+                if (!string.IsNullOrWhiteSpace(validationErrors))
                 {
-                    logger.LogError(ex, $"Error processing row {rowNo}: {ex.Message}");
+                    errBatch.AppendLine($"Skipping row {rowNo} due to validation errors: {validationErrors}");
+                    continue;
                 }
-
             }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Error processing row {rowNo}: {ex.Message}");
+            }
+            rowNo++;
         }
+        await productService.AddOrUpdateProductsAsync(products);
+        return (rowNo,errBatch.ToString());
     }
+
     private string ValidateRow(DataRow row, int rowNo)
     {
         StringBuilder errMessages = new();

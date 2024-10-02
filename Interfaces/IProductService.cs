@@ -5,4 +5,5 @@ public interface IProductService
 {
     Task<IEnumerable<ProductViewModel>> SearchProductsAsync(string search);
     Task AddOrUpdateProductAsync(ProductViewModel product);
+    Task AddOrUpdateProductsAsync(IEnumerable<ProductViewModel> products);
 }
