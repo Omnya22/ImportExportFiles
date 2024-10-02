@@ -1,3 +1,45 @@
-﻿@{
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<ProductViewModel>
+
+@{
     ViewData["Title"] = "Products";
 }
+<!-- Search Form -->
+<form method="get">
+    <input type="text" name="search" value="@Context.Request.Query["search"]" placeholder="Search..." />
+    <button type="submit">Search</button>
+</form>
+
+<!-- Data Table -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Band Number</th>
+            <th>Category Code</th>
+            <th>Manufacturer</th>
+            <th>Part SKU</th>
+            <th>Item Description</th>
+            <th>List Price</th>
+            <th>Min Discount</th>
+            <th>Discount Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.BandNumber</td>
+                <td>@product.CategoryCode</td>
+                <td>@product.Manufacturer</td>
+                <td>@product.PartSku</td>
+                <td>@product.ItemDescription</td>
+                <td>@product.ListPrice $</td>
+                <td>@product.MinDiscount %</td>
+                <td>@product.DiscountPrice $</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, search = Context.Request.Query["search"] }))

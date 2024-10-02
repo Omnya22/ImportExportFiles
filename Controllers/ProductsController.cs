@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ImportExportFiles.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using X.PagedList;
 
 namespace ImportExportFiles.Controllers;
 
-public class ProductsController : Controller
+public class ProductsController(IProductService productService) : Controller
 {
-    public IActionResult Index()
+    [HttpGet]
+    public async Task<IActionResult> Index(int? page, string search)
     {
-        return View();
+        var products = await productService.SearchProductsAsync(search);
+        int pageSize = 10;
+        int pageNumber = (page ?? 1);
+        return View(products.ToPagedList(pageNumber, pageSize));
     }
     public IActionResult Import()
     {
