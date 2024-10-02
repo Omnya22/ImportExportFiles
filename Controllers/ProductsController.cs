@@ -7,7 +7,8 @@ namespace ImportExportFiles.Controllers;
 
 public class ProductsController(
     IProductService productService,
-    IImportService importService) : Controller
+    IImportService importService,
+    IExportService exportService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(int? page, string search)
@@ -25,5 +26,13 @@ public class ProductsController(
     {
         await importService.ImportDataFromExcelFileAsync(file);
         return RedirectToAction("Index");
+    }
+    [HttpGet]
+    public async Task<IActionResult> Export(string search)
+    {
+        var productList = await productService.SearchProductsAsync(search);
+        var fileBytes = exportService.ExportDataAsExcelFile("Products", productList);
+
+        return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Products.xlsx");
     }
 }

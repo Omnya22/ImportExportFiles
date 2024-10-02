@@ -11,6 +11,12 @@
     <button type="submit">Search</button>
 </form>
 
+<!-- Export Form -->
+<form asp-action="Export" method="get">
+    <input type="hidden" name="search" value="@Context.Request.Query["search"]" />
+    <button type="submit">Export to Excel</button>
+</form>
+
 <!-- Data Table -->
 <table class="table table-striped">
     <thead>
