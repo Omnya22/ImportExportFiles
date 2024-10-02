@@ -1,10 +1,13 @@
 ﻿using ImportExportFiles.Interfaces;
+using ImportExportFiles.Services;
 using Microsoft.AspNetCore.Mvc;
 using X.PagedList;
 
 namespace ImportExportFiles.Controllers;
 
-public class ProductsController(IProductService productService) : Controller
+public class ProductsController(
+    IProductService productService,
+    IImportService importService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index(int? page, string search)
@@ -14,8 +17,13 @@ public class ProductsController(IProductService productService) : Controller
         int pageNumber = (page ?? 1);
         return View(products.ToPagedList(pageNumber, pageSize));
     }
-    public IActionResult Import()
+    [HttpGet]
+    public IActionResult Import() => View();
+
+    [HttpPost]
+    public async Task<IActionResult> Import([FromForm] IFormFile file)
     {
-        return View();
+        await importService.ImportDataFromExcelFileAsync(file);
+        return RedirectToAction("Index");
     }
 }

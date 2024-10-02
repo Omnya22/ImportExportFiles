@@ -1,4 +1,5 @@
 ﻿@using X.PagedList.Mvc.Core
+@using ImportExportFiles.Constants
 @model X.PagedList.IPagedList<ProductViewModel>
 
 @{
@@ -14,14 +15,14 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Band Number</th>
-            <th>Category Code</th>
-            <th>Manufacturer</th>
-            <th>Part SKU</th>
-            <th>Item Description</th>
-            <th>List Price</th>
-            <th>Min Discount</th>
-            <th>Discount Price</th>
+            <th>@HeaderNames.BandNumber</th>
+            <th>@HeaderNames.CategoryCode</th>
+            <th>@HeaderNames.Manufacturer</th>
+            <th>@HeaderNames.PartSku</th>
+            <th>@HeaderNames.ItemDescription</th>
+            <th>@HeaderNames.ListPrice $</th>
+            <th>@HeaderNames.MinDiscount %</th>
+            <th>@HeaderNames.DiscountPrice $</th>
         </tr>
     </thead>
     <tbody>
