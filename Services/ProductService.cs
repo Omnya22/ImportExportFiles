@@ -90,6 +90,8 @@ public class ProductService(
         try
         {
             var productList = mapper.Map<IEnumerable<Product>>(products);
+
+            unitOfWork.ChangeTracker(enabled: false);
             await unitOfWork.Products.AddRangesAsync(productList);
 
             await unitOfWork.CompleteAsync();
@@ -98,6 +100,10 @@ public class ProductService(
         {
             logger.LogError(ex,$"Error inserting batch: {ex.Message}");
             throw;
+        }
+        finally 
+        {
+            unitOfWork.ChangeTracker(enabled: true);
         }
     }
 }

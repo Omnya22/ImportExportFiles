@@ -9,5 +9,6 @@ public class UnitOfWork(ApplicationDbContext context, IProductRepository product
     public IProductRepository Products => productRepository ??= new ProductRepository(context);
     public async Task<int> CompleteAsync() => await context.SaveChangesAsync();
     public void Dispose() => context.Dispose();
+    public void ChangeTracker(bool enabled) => context.ChangeTracker.AutoDetectChangesEnabled = enabled;
 }
 
